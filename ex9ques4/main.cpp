@@ -4,12 +4,65 @@
 #include <iostream>
 using namespace std;
 #include <cstring>
+
+/**
+ * @brief A function to add a word to its correct lexicographical location in words. If the word already exists in words,
+ * it won't be added again.
+ * @param words An array of pointers to strings of varying length
+ * @param numWords Number of words in words
+ * @param newWord A string to add to words
+*/
+
 void newStr(char**& words, int& numWords, char* newWord);
+
+
+/**
+ * @brief Deletes a word from dictionary
+ * @param words An array of pointers to strings of varying length
+ * @param numWords Number of words in words
+ * @param deletedWord Word to delete from words
+*/
+
 void deleteStr(char**& words, int& numWords, char* newWord);
+
+
+/**
+ * @brief Checks if a word exists in words
+ * @param words An array of pointers to strings of varying length
+ * @param numWords Number of words in words
+ * @param searchWord Word to search if exists in words
+ * @return Pointer to the word, if it is in the array, else NULL
+*/
+
 char* searchStr(char** words, int numWords, char* newWord);
-void printChar(char** words,  int numWords, char letter);
-void printAll(char** words,  int numWords);
-void LexicographicalBubbleSort(char**& arr, int numWords);
+
+
+/**
+ * @brief Prints all words in dynamic array which start with letter-letter.
+ * @param words An array of pointers to words of varying length
+ * @param numWords Number of words in words
+ * @param letter Letter of the alphabet
+*/
+
+void printChar(char** words, int numWords, char letter);
+
+
+/**
+ * @brief Prints all words of dictionary
+ * @param words An array of pointers to strings of varying length
+ * @param numWords Number of words in words
+*/
+
+void printAll(char** words, int numWords);
+
+
+/**
+ * @brief Yehuda Moshe Binyamin A driver function to allow addition, deletion, search, print by first character and print all
+ * functions for a dictionary
+ * @param
+ * @return
+*/
+
 int main(void)
 {
     char** words = NULL;
@@ -26,19 +79,16 @@ int main(void)
         case 0:
             cout << "enter the word: " << endl;
             cin.ignore();
-            cin.getline(newWord, 80);
+            cin.getline(newWord, 79);
             newStr(words, numWords, newWord);
-            cout << words[0] << endl;
-            if (numWords > 1)
-            {
-                cout << words[1] << endl;
-            }
+            printAll(words, numWords);
             break;
         case 1:
             cout << "enter the word to delete:" << endl;
             cin.ignore();
             cin.getline(newWord, 80);
             deleteStr(words, numWords, newWord);
+            printAll(words, numWords);
             break;
         case 2:
             cout << "enter the word to search for:" << endl;
@@ -60,7 +110,7 @@ int main(void)
             printChar(words, numWords, letter);
             break;
         case 4:
-            printAll(words,numWords);
+            printAll(words, numWords);
             break;
         case 5:
             break;
@@ -82,11 +132,13 @@ int main(void)
     return 0;
 }
 
+
 void newStr(char**& words, int& numWords, char* newWord)
 {
+
     if (numWords == 0)
     {
-        numWords+=1;
+        numWords += 1;
         words = new char* [numWords];
         for (int i = 0; i < numWords; ++i)
         {
@@ -94,104 +146,122 @@ void newStr(char**& words, int& numWords, char* newWord)
         }
         for (int i = 0; i < strlen(newWord) + 1; ++i)
         {
-            words[numWords - 1][i] = newWord[i];
+            words[0][i] = newWord[i];
         }
     }
     else
     {
-        numWords+=1;
-        char** newArrWords = new char* [numWords];//before +1
-        for (int i = 0; i < numWords-1; ++i)//before without -1
-        {
-            cout << "FIRST TEST:STRLEN OF ELEMENT" << i << strlen(words[i]) << endl;
-            newArrWords[i] = new char[strlen(words[i])+1];
-        }
-        cout << "LETS PRINT NEW WORD!" << endl;
-        cout << newWord << endl;
-        cout << "FOR NEW WORD!" << strlen(newWord) + 1 << endl;
-        newArrWords[numWords - 1] = new char[strlen(newWord)+1];//for new element
 
-        //copy old elements to new array
-        for (int i = 0; i < numWords - 1; ++i)
+        //Return if the word is already in the dictionary
+        if (searchStr(words, numWords, newWord))
         {
-            cout << "STRLEN OF ELEMENT" << i << strlen(words[i]) << endl;
-            for (int j = 0; j < strlen(words[i])+1; ++j)
+            return;
+        }
+        char** newArrWords = new char* [numWords + 1];
+        int indexFirstBigger = -1;
+        for (int i = 0; i < numWords; ++i)
+        {
+            if (strcmp(words[i], newWord) > 0)
             {
-                *(*(newArrWords + i) + j) = *(*(words + i) + j);
+                indexFirstBigger = i;
+            }
+        }
+        if (indexFirstBigger == -1)
+        {
+            indexFirstBigger = numWords;
+        }
+        /*Copy elements to new array until indexFirstBigger*/
+        for (int i = 0; i < indexFirstBigger && i < numWords; ++i)
+        {
+            newArrWords[i] = new char[strlen(words[i]) + 1];
+            for (int j = 0; j < strlen(words[i]) + 1; ++j)
+            {
+                newArrWords[i][j] = words[i][j];
             }
         }
 
-        //copy new element
-        for (size_t j = 0; j < strlen(newWord) + 1; ++j)
+        newArrWords[indexFirstBigger] = new char[strlen(newWord) + 1];
+        for (int j = 0; j < strlen(newWord) + 1; ++j)
         {
-            newArrWords[numWords - 1][j] = newWord[j];
+            newArrWords[indexFirstBigger][j] = newWord[j];
         }
 
-        for (int i = 0; i < numWords - 1; ++i)
+        /*From indexFirstBigger copy elements from original array until the end*/
+        for (int i = indexFirstBigger + 1; i < numWords + 1; ++i)
+        {
+            newArrWords[i] = new char[strlen(words[i - 1]) + 1];
+            for (int j = 0; j < strlen(words[i - 1]) + 1; ++j)
+            {
+                newArrWords[i][j] = words[i - 1][j];
+            }
+        }
+        for (int i = 0; i < numWords; ++i)
         {
             delete[] words[i];
         }
         delete[] words;
         words = newArrWords;
-        LexicographicalBubbleSort(words, numWords);
+        numWords++;
     }
 }
-/**
- * @brief Deletes a word from dictionary
- * @param words 
- * @param numWords 
- * @param deletedWord 
-*/
+
+
 void deleteStr(char**& words, int& numWords, char* deletedWord)
 {
-    int indexNotToCopy = -1;
+    int numWordNotCopy = -1;
+    /*Find index of pointer to word which points to the same word as deletedWord*/
     for (int i = 0; i < numWords; ++i)
     {
         if (strcmp(*(words + i), deletedWord) == 0)//if deleted word found
         {
-            indexNotToCopy = i;
-            char** tempWords = new char* [numWords - 1];
-            //initialize new array of pointers
-            for (int i = 0; i <numWords - 1; ++i)
-            {
-                *(tempWords + i) = new char[strlen(*(words + i)) + 1];
-            }
-
-            //copy from old array to temp array
-            for (int i = 0; i <indexNotToCopy; ++i)
-            {
-               
-                    for (int j = 0; j < strlen(*(tempWords + i) + 1); ++j)
-                    {
-                        *(*(tempWords + i) + j) = *(*(words + i) + j);
-                    }  
-            }
-            for (int i=indexNotToCopy+1;i<numWords-1;++i)
-            {
-
-                for (int j = 0; j < strlen(*(tempWords + i) + 1); ++j)
-                {
-                    *(*(tempWords + i) + j) = *(*(words + i) + j);
-                }
-            }
-
-            for (int i = 0; i < numWords-1; ++i)
-            {
-                delete[] words[i];
-            }
-            delete[] words;
-            words = tempWords;
-            numWords--;
+            numWordNotCopy = i;
         }
     }
-    LexicographicalBubbleSort(words, numWords);
+
+    /*If the word for deletion isn't in dictionary-return as it cannot get deleted*/
+    if (numWordNotCopy == -1)
+    {
+        return;
+    }
+    char** newWords = new char* [numWords - 1];
+
+    for (int i = 0; (i < numWordNotCopy) && (i < numWords - 1); ++i)
+    {
+        newWords[i] = new char[strlen(words[i]) + 1];
+        for (int j = 0; j < strlen(words[i]) + 1; ++j)
+        {
+            newWords[i][j] = words[i][j];
+        }
+    }
+
+    for (int i = numWordNotCopy + 1; i < numWords - 1; ++i)
+    {
+        newWords[i - 1] = new char[strlen(words[i]) + 1];
+        for (int j = 0; j < strlen(words[i]) + 1; ++j)
+        {
+            newWords[i - 1][j] = words[i][j];
+        }
+    }
+    //Copy last word if it's not the word we want to delete
+    if ((numWords - 1) != numWordNotCopy)
+    {
+        newWords[numWords - 2] = new char[strlen(words[numWords - 1]) + 1];
+        for (int j = 0; j < strlen(words[numWords - 1]) + 1; ++j)
+        {
+            newWords[numWords - 2][j] = words[numWords - 1][j];
+        }
+    }
+    /*Delete old dictionary*/
+    for (int i = 0; i < numWords; ++i)
+    {
+        delete[] words[i];
+    }
+    delete[] words;
+    numWords--;
+    words = newWords;
 }
 
-/**
- * @brief Prints all words of dictionary
- * @param words 
- * @param numWords 
-*/
+
 void printAll(char** words, int numWords)
 {
     for (int i = 0; i < numWords; i++)
@@ -202,12 +272,12 @@ void printAll(char** words, int numWords)
             cout << *(*(words + i) + j);
 
         }
-        cout <<" ";
+        cout << " ";
     }
     cout << endl;
 }
 
-//to check if a word exists or not
+
 char* searchStr(char** words, int numWords, char* searchWord)
 {
     for (int i = 0; i < numWords; i++)
@@ -221,6 +291,7 @@ char* searchStr(char** words, int numWords, char* searchWord)
     return NULL;
 }
 
+
 void printChar(char** words, int numWords, char letter)
 {
     for (int i = 0; i < numWords; i++)
@@ -231,63 +302,67 @@ void printChar(char** words, int numWords, char letter)
             {
                 cout << *(*(words + i) + j);
             }
-            cout << endl;
+            cout << " ";
         }
     }
+    cout << endl;
 }
-//Sorts according to lexicographical order using bubble sort
-void LexicographicalBubbleSort(char**& words, int numWords)
-{
-    int length;
-    int maxLength = 0;//maximum length of a word in a dictionary
-    for (int i = 0; i < numWords; ++i)
-    {
-        length = strlen(words[i]);
-        if (length > maxLength)
-        {
-            maxLength = length;
-        }
-    }
-
-    bool flag = true;
-    int end = numWords;
-
-    char** temp;
-    temp = new char* [numWords];
-
-    for (int i = 0; i < numWords; ++i)
-    {
-        *(temp + i) = new char[strlen(words[i]) + 1];
-    }
-
-    for (int comparisonLetterIndex = maxLength; comparisonLetterIndex >= 0; comparisonLetterIndex--)
-    {
-        cout << "HELLO!" << endl;
-        for (end = numWords - 1; end > 0; --end)
-        {
-            flag = false;
-            for (int i = 0; i < end; ++i)
-            {
-                //first check that index checking is a letter in each of the compared dictionaries...
-                if ((strlen(words[i + 1]) - 1 >= comparisonLetterIndex) && (strlen(words[i]) - 1 >= comparisonLetterIndex) && (words[i + 1][comparisonLetterIndex - 1] < words[i][comparisonLetterIndex - 1]))
-                {
-                    cout << comparisonLetterIndex - 1 << endl;
-                    flag = true;
-                    for (size_t j = 0; j < strlen(words[i]) + 1; ++j)
-                    {
-                        temp[i][j] = words[i][j];
-                    }
-                    for (size_t j = 0; j < strlen(words[i + 1]) + 1; ++j)
-                    {
-                        words[i][j] = words[i + 1][j];
-                    }
-                    for (size_t j = 0; j < strlen(temp[i]) + 1; ++j)
-                    {
-                        words[i + 1][j] = temp[i][j];
-                    }
-                }
-            }
-        }
-        comparisonLetterIndex--;
-    }
-}
+/**Sample Execution:
+enter 0 - 5
+0
+enter the word :
+good
+good
+enter 0 - 5
+0
+enter the word :
+hello
+good hello
+enter 0 - 5
+0
+enter the word :
+shalom
+good hello shalom
+enter 0 - 5
+0
+enter the word :
+today
+good hello shalom today
+enter 0 - 5
+2
+enter the word to search for :
+what
+not found
+enter 0 - 5
+2
+enter the word to search for :
+hello
+found
+enter 0 - 5
+1
+enter the word to delete :
+hello
+good shalom today
+enter 0 - 5
+1
+enter the word to delete :
+toda
+good shalom today
+enter 0 - 5
+3
+enter the char :
+s
+shalom
+enter 0 - 5
+0
+enter the word :
+toda
+good shalom toda today
+enter 0 - 5
+3
+enter the char :
+t
+toda today
+enter 0 - 5
+5
+    **/

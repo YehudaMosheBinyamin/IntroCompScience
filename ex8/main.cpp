@@ -117,11 +117,11 @@ void addLine(int**& buses, int& numBuses, int line, int stops, int durationOfRid
 		*(*(tempBuses + (numBuses - 1)) + 0) = line;
 		*(*(tempBuses + (numBuses - 1)) + 1) = stops;
 		*(*(tempBuses + (numBuses - 1)) + 2) = durationOfRide;
-		for (int i = 0; i < numBuses - 1; ++i) 
+		for (int i = 0; i < numElements; ++i) 
 		{
-			delete[] buses[i];
+			free paths[i];
 		}
-		delete [] buses;
+		free paths;
 		buses=tempBuses;
 	}
 	SortArray(buses, numBuses);

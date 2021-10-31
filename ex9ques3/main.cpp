@@ -3,7 +3,8 @@ using namespace std;
 #include <cstring>
 //Yehuda Moshe Binyamin 328972427
 
-//Calculates minimum skip between each letter of word in text(for example:abl is in table with gap 0,abc is in agapvbkxcoc with gaps of two),
+//Calculates minimum skip between each letter of word in text(for example:abl is in table with gap 0,
+//abc is in agapvbkxcoc with gaps of two),
 //if word is not in text in any way,it will return -1
 int minimalSkip(char text[80], char word[80]);
 
