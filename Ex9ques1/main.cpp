@@ -3,7 +3,8 @@ using namespace std;
 #include <cstring>
 //328972427 Yehuda Moshe Binyamin
 /**
- * @brief function that receives a string with a maximal length of 80 including null bytes, the function returns the string encrypted according to AZBY
+ * @brief function that receives a string with a maximal length of 80 including null bytes, the function returns the 
+ *string encrypted according to AZBY
  * @param text 
  * @return char[]
 */

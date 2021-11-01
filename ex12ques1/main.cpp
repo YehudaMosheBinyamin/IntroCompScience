@@ -1,9 +1,16 @@
 #include <fstream>
 #include <iostream>
 using namespace std;
+/**
+ * @author Yehuda Moshe Binyamin
+ * @brief A program which takes grades from grades.txt, and names from names.txt and combines the information in roster.txt
+ * If there are a different amount of grades and names, the unnescessary names/grades will be printed to the screen with an appropriate message
+ * @param
+ * @return
+*/
 int main(void)
 {
-    char name[20];
+    char name[50];
     int grade;
     bool readGrades = true;
     bool readNames = true;
@@ -12,57 +19,45 @@ int main(void)
     ofstream outputFile("roster.txt");
     //while both files have information
     //as long as both have not reached the end of the files
-    do{
-        gradesFile >> grade;
-        if (gradesFile.eof())
-        {
-            cout << grade << endl;
-            readGrades = false;
-            gradesFile.close();
-            cout << "finished reading grades before names" << endl;
-            break;
-        }
-        namesFile >> name;
-        if (strcmp(name, "") == 0)
-        {
-            readNames = false;
-            cout << "finished reading names before grades" << endl;
-            break;
-        }
+    namesFile >> name;
+    gradesFile >> grade;
+    while (!gradesFile.eof() && !namesFile.eof())
+    {
         outputFile << name << " " << grade << endl;
-        
-    } while ((readGrades)&&(readNames));
-    //if there are still names without grades
-        while (readNames) 
-        {   
-            namesFile >> name;
-            if (strcmp(name, "") == 0)
-            {
-                readNames = false;
-                namesFile.close();
-                break;
-            }
-            cout << name << endl;
-        }
-    
-    //if there are still grades without names
-        while (readGrades)
+        namesFile >> name;
+        gradesFile >> grade;
+        if (gradesFile.eof() && !namesFile.eof())
         {
-            gradesFile >> grade;
-            if (gradesFile.eof())
-            {
-                gradesFile.close();
-                readGrades = false;
-                break;   
-            }           
-            cout << grade << endl;
+            cout << "finished reading grades before names" << endl;
+            cout << name << endl;
+            outputFile << name << endl;
         }
-    
+        if (!gradesFile.eof() && namesFile.eof())
+        {
+            cout << "finished reading names before grades" << endl;
+            cout << grade << endl;
+            outputFile << grade;
+        }
+    }
+    namesFile >> name;
+    while (!namesFile.eof())
+    {
+        cout << name << endl;
+        namesFile >> name;
+    }
+    gradesFile >> grade;
+    while (!gradesFile.eof())
+    {
+        cout << grade << endl;
+        gradesFile >> grade;
+    }
+    namesFile.close();
+    gradesFile.close();
     outputFile.close();
     return 0;
 }
-/**Sample Input and Output:
-names.txt:
+/**Sample Execution 1:
+names.txt
 Elkana
 Chana
 Penina
@@ -70,17 +65,61 @@ Eli
 Shmuel
 Shaul
 Hanaar
-grades.txt:
+
+grades.txt
 100
 90
 80
 70
 60
-roster.txt(output):
+
+
+roster.txt output file:
 Elkana 100
 Chana 90
 Penina 80
 Eli 70
 Shmuel 60
-Example 2:**/
+
+
+Screen:
+
+finished reading grades before names
+Shaul
+Hanaar
+
+Sample Execution 2:
+
+names.txt
+
+Elkana
+Chana
+Penina
+Eli
+Shmuel
+
+grades.txt
+
+100
+90
+80
+70
+60
+50
+40
+
+roster.txt output file:
+Elkana 100
+Chana 90
+Penina 80
+Eli 70
+Shmuel 60
+
+
+Screen output:
+finished reading names before grades
+50
+40
+
+**/
 
